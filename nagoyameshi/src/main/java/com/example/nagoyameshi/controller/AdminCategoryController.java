@@ -29,7 +29,7 @@ public class AdminCategoryController {
 	private final CategoryRepository categoryRepository;
 	private final CategoryService categoryService;
 		
-		public AdminCategoryController(CategoryRepository categoryRepository, CategoryService categoryService) {
+	public AdminCategoryController(CategoryRepository categoryRepository, CategoryService categoryService) {
 		this.categoryRepository = categoryRepository;
 		this.categoryService = categoryService;
 	}
@@ -44,71 +44,67 @@ public class AdminCategoryController {
             categoryPage = categoryRepository.findAll(pageable);
         }  
                
-       model.addAttribute("categoryPage", categoryPage);   
+        model.addAttribute("categoryPage", categoryPage);   
         model.addAttribute("keyword", keyword);
        
-       return "admin/categories/index";
+        return "admin/categories/index";
+   }
+   @GetMapping("/{id}")
+   public String show(@PathVariable(name = "id") Integer id, Model model) {
+		Category category = categoryRepository.getReferenceById(id);
+		model.addAttribute("category", category);
+		return "admin/categories/show";
    } 
-	
-	  @GetMapping("/{id}")
-	     public String show(@PathVariable(name = "id") Integer id, Model model) {
-	         Category category = categoryRepository.getReferenceById(id);
-	         
-	         model.addAttribute("category", category);
-	         
-	         return "admin/categories/show";
-	     } 
 	  
-	  @GetMapping("/register")
-	     public String register(Model model) {
-	         model.addAttribute("categoryRegisterForm", new CategoryRegisterForm());
-	         return "admin/categories/register";
-	     } 
+   @GetMapping("/register")
+   public String register(Model model) {
+	     model.addAttribute("categoryRegisterForm", new CategoryRegisterForm());
+	     return "admin/categories/register";
+   } 
+
+   @PostMapping("/create")
+   public String create(@ModelAttribute @Validated CategoryRegisterForm categoryRegisterForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+	   	if (bindingResult.hasErrors()) {
+		   return "admin/categories/register";
+	   	}
+	         
+	   	categoryService.create(categoryRegisterForm);
+	   	redirectAttributes.addFlashAttribute("successMessage", "カテゴリを登録しました。");    
+ 
+	   	return "redirect:/admin/categories";
+   }  
 	  
-	  @PostMapping("/create")
-	     public String create(@ModelAttribute @Validated CategoryRegisterForm categoryRegisterForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {        
-	         if (bindingResult.hasErrors()) {
-	             return "admin/categories/register";
-	         }
+   @GetMapping("/{id}/edit")
+   public String edit(@PathVariable(name = "id") Integer id, Model model) {
+	   Category category = categoryRepository.getReferenceById(id);
+	   String imageName = category.getImageName();
+	   CategoryEditForm categoryEditForm = new CategoryEditForm(category.getId(), category.getName(), null);
 	         
-	         categoryService.create(categoryRegisterForm);
-	         redirectAttributes.addFlashAttribute("successMessage", "カテゴリを登録しました。");    
-	         
-	         return "redirect:/admin/categories";
-	     }  
-	  
-	  @GetMapping("/{id}/edit")
-	     public String edit(@PathVariable(name = "id") Integer id, Model model) {
-	         Category category = categoryRepository.getReferenceById(id);
-	         String imageName = category.getImageName();
-	         CategoryEditForm categoryEditForm = new CategoryEditForm(category.getId(), category.getName(), null);
-	         
-	         model.addAttribute("imageName", imageName);
-	         model.addAttribute("categoryEditForm", categoryEditForm);
-	         
-	         return "admin/categories/edit";
-	     }    
+	   model.addAttribute("imageName", imageName);
+	   model.addAttribute("categoryEditForm", categoryEditForm);
+     
+	   return "admin/categories/edit";
+   }    
 	   
-	  @PostMapping("/{id}/update")
-	     public String update(@ModelAttribute @Validated CategoryEditForm categoryEditForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {        
-	         if (bindingResult.hasErrors()) {
-	             return "admin/categories/edit";
-	         }
-	         
-	         categoryService.update(categoryEditForm);
-	         redirectAttributes.addFlashAttribute("successMessage", "カテゴリを編集しました。");
-	         
-	         return "redirect:/admin/categories";
-	     }    
+   @PostMapping("/{id}/update")
+   public String update(@ModelAttribute @Validated CategoryEditForm categoryEditForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {        
+	   if (bindingResult.hasErrors()) {
+		   return "admin/categories/edit";
+	   }
+     
+	   categoryService.update(categoryEditForm);
+	   redirectAttributes.addFlashAttribute("successMessage", "カテゴリを編集しました。");
+     
+	   return "redirect:/admin/categories";
+   }    
 	  
-	  @PostMapping("/{id}/delete")
-	     public String delete(@PathVariable(name = "id") Integer id, RedirectAttributes redirectAttributes) {        
-	         categoryRepository.deleteById(id);
-	                 
-	         redirectAttributes.addFlashAttribute("successMessage", "カテゴリを削除しました。");
+	@PostMapping("/{id}/delete")
+	public String delete(@PathVariable(name = "id") Integer id, RedirectAttributes redirectAttributes) {
+		  categoryRepository.deleteById(id);
 	         
-	         return "redirect:/admin/categories";
-	     } 
-	  
+		  redirectAttributes.addFlashAttribute("successMessage", "カテゴリを削除しました。");
+	 
+		  return "redirect:/admin/categories";
+	}   
 } 	
 		
