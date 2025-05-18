@@ -8,6 +8,7 @@
        <title>予約内容確認</title>   
    </head>
    <body>
+        <!-- インデントがバラバラなので、揃えてください -->
        <div class="nagoyameshi-wrapper">
            <!-- ヘッダー -->
            <div th:replace="~{fragment :: header}"></div>
@@ -27,6 +28,7 @@
                            
                             <h1 class="mb-4 text-center">予約内容確認</h1>
                             
+                             <!-- コメント: 表示内容の構造が繰り返しパターンを使用しているため、Thymeleafのフラグメントに抽出できます -->
                              <form method="post" th:action="@{/restaurants/__${restaurant.getId()}__/reservations/create}" th:object="${reservationRegisterForm}">
 								 <input type="hidden" th:field="*{restaurantId}">
                                  <input type="hidden" th:field="*{userId}">
@@ -69,7 +71,8 @@
                                        </div>
                                    </div>
                                </div>
-                               
+
+<!-- コメント: LocalDateおよびLocalTimeをテキスト形式で渡しているため、フォーマットに問題がある可能性があります -->
                                <div class="d-flex justify-content-center">
                                    <button type="submit" class="btn text-white shadow-sm w-100 nagoyameshi-btn">確定する</button>
                                </div>

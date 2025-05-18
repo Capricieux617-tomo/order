@@ -73,18 +73,23 @@ public class AuthController {
 
         // プレミアムプランの支払い処理
         if (signupForm.getIsPremium()) {
+            // コメント: URL生成のロジックはユーティリティメソッドかサービスに移動すべきです
             String successUrl = httpServletRequest.getRequestURL().toString().replace("/signup", "/signup/premium/success?userId=" + createdUser.getId());
             String cancelUrl = httpServletRequest.getRequestURL().toString().replace("/signup", "/signup/premium/cancel");
 
             // SignupFormを渡してStripeセッションを作成
+            // コメント: StripeException処理が不足しています。try-catchでエラーハンドリングすべきです
             String sessionId = stripeService.createCheckoutSession(signupForm, successUrl, cancelUrl);
 
+            // コメント: URLはアプリケーション設定から取得するか、Stripeサービスから完全なURLを返すべきです
             return new RedirectView("https://checkout.stripe.com/c/pay/" + sessionId);
         }
 
         // サインアップイベントの発行
+        // コメント: プレミアム会員の場合もメール認証が必要ならば、この処理は条件分岐の前に移動すべきです
         String requestUrl = httpServletRequest.getRequestURL().toString();
         signupEventPublisher.publishSignupEvent(createdUser, requestUrl);
+        // コメント: メッセージ文字列は定数化やプロパティファイルで管理すると国際化対応が容易になります
         redirectAttributes.addFlashAttribute("successMessage", "ご入力いただいたメールアドレスに認証メールを送信しました。メールに記載されているリンクをクリックし、会員登録を完了してください。");
 
         return "redirect:/";
@@ -94,9 +99,11 @@ public class AuthController {
     public String verify(@RequestParam(name = "token") String token, Model model) {
         VerificationToken verificationToken = verificationTokenService.getVerificationToken(token);
 
+        // コメント: トークンの有効期限チェックが必要です
         if (verificationToken != null) {
             User user = verificationToken.getUser();
             userService.enableUser(user);
+            // コメント: 直接変数に代入せずにmodelに追加する方がシンプルです
             String successMessage = "会員登録が完了しました。";
             model.addAttribute("successMessage", successMessage);
         } else {

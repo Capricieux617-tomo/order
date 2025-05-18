@@ -8,12 +8,24 @@
         <title>Nagoya Meshi</title>	
     </head>
     <body>
+        <!-- 
+    1. インデント：多くのファイルでインデントが一貫していません
+    2. パンくずリスト：編集ページのパンくずリストに不適切な「登録」が含まれています
+    3. モーダル：削除モーダルのコードが各ファイルで重複しています。フラグメント化すべきです
+    4. フォームレイアウト：共通のフォームレイアウトパターンがあり、フラグメント化すべきです
+    5. ページネーション：同じページネーションコードが複数のファイルに出現します
+    6. 命名規則：一部のID名（deleterestaurantModalLabelなど）が一貫していません
+    7. スタイル：インラインスタイルの代わりにCSSクラスを使用すべき箇所があります
+    8. 開発コメント：本番環境では削除すべき開発メモのコメントが残っています
+    -->
+        <!-- インデントがバラバラなので、揃えてください -->
 		 <div class="nagoyameshi-wrapper">
              <!-- ヘッダー -->
              <div th:replace="~{fragment :: header}"></div>
              
              <main>
                  <div class="container pt-4 pb-5 nagoyameshi-container">
+                     <!-- コメント: アラート表示が似たようなパターンで3つ並んでいます。共通化できます -->
                      <div th:if="${param.loggedIn}" class="alert alert-info">
                          ログインしました。
                      </div>  
@@ -61,6 +73,7 @@
                      
                              <h2 class="text-center mb-3">カテゴリから探す</h2> 
                              
+                             <!-- コメント: カテゴリ表示のレイアウトが小さいデバイスで崩れる可能性があります。レスポンシブデザインの調整が必要です -->
                              <div class="row">
 								 <div th:each="category : ${categories}" class="col-md-4 mb-3">
 									 <a th:href="@{'/restaurants/category/' + ${category.id}}">

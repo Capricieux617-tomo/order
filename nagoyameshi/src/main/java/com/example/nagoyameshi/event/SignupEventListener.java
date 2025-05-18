@@ -21,21 +21,27 @@ public class SignupEventListener {
      }
  
      @EventListener
+     // コメント: privateではなくpublicにすべきです。一般的にイベントリスナーメソッドはpublicで宣言されます
      private void onSignupEvent(SignupEvent signupEvent) {
          User user = signupEvent.getUser();
          String token = UUID.randomUUID().toString();
          verificationTokenService.create(user, token);
          
+         // コメント: メール関連の文字列はプロパティファイルに外部化すべきです
          String recipientAddress = user.getEmail();
          String subject = "メール認証";
+         // コメント: URLの構築方法は脆弱です。URLの妥当性チェックや、URIビルダーを使用すべきです
          String confirmationUrl = signupEvent.getRequestUrl() + "/verify?token=" + token;
          String message = "以下のリンクをクリックして会員登録を完了してください。";
          
+         // コメント: メール送信処理は別のメソッドに抽出すべきです
          SimpleMailMessage mailMessage = new SimpleMailMessage(); 
          mailMessage.setTo(recipientAddress);
          mailMessage.setSubject(subject);
          mailMessage.setText(message + "\n" + confirmationUrl);
+         // コメント: 例外処理が欠けています。メール送信に失敗した場合のハンドリングが必要です
          javaMailSender.send(mailMessage);
+         // コメント: ログ出力が不足しています。メール送信成功や失敗のログを残すべきです
      }
-
+     
 }

@@ -31,10 +31,12 @@ public class AdminUserController {
     		            Model model) {
         Page<User> userPage;
         
+        // コメント: この条件分岐が複雑すぎるため、メソッドを分割するかサービスレイヤーに移動すべきです
         if (keyword != null && !keyword.isEmpty()) {
             if (isPremium != null) {
                 userPage = userRepository.findByNameContainingOrFuriganaContainingAndIsPremium(keyword, keyword, isPremium, pageable);
             } else {
+                // コメント: リポジトリメソッドが"%"を含んでいるなら、ここでは不要です。メソッド名と実装を確認してください
                 userPage = userRepository.findByNameContainingOrFuriganaContaining("%" + keyword + "%", "%" + keyword + "%", pageable);
             }
         } else {
@@ -45,7 +47,8 @@ public class AdminUserController {
             }
         } 
         
-     // isPremiumがnullの場合、デフォルト値を設定
+        // コメント: isPremiumの処理順序が不適切です。検索の前にデフォルト値を設定すべきです
+        // コメント: この処理は実際には検索結果に影響しないため、不要か誤りである可能性があります
         if (isPremium == null) {
         	isPremium = false; // デフォルトで無料会員とする
         }
@@ -59,11 +62,12 @@ public class AdminUserController {
     
     @GetMapping("/{id}")
     public String show(@PathVariable(name = "id") Integer id, Model model) {
+        // コメント: getReferenceByIdではなく、findByIdを使用して存在確認すべきです
+        // コメント: ユーザーが存在しない場合のエラーハンドリングが必要です
         User user = userRepository.getReferenceById(id);
         
         model.addAttribute("user", user);
         
         return "admin/users/show";
     }
-    
 }

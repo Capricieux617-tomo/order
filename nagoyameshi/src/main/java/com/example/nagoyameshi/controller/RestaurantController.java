@@ -78,6 +78,8 @@ public class RestaurantController {
                 restaurantPage = Page.empty();
             }
         } else if (price != null) {
+            // コメント: このような条件分岐の繰り返しはユーティリティメソッドに抽出できます
+            // 例：private Page<Restaurant> getRestaurantsByPrice(Integer price, String order, Pageable pageable)
             if (order != null && order.equals("priceAsc")) {
                 restaurantPage = restaurantRepository.findByPriceLessThanEqualOrderByPriceAsc(price, pageable);
             } else if (order != null && order.equals("priceDesc")) {
@@ -86,6 +88,7 @@ public class RestaurantController {
                 restaurantPage = restaurantRepository.findByPriceLessThanEqualOrderByCreatedAtDesc(price, pageable);    
             }
         } else {
+            // コメント: order変数の値チェックがありません。不正な値が入力された場合のデフォルト動作を明確にすべきです
             if (order != null && order.equals("priceAsc")) {
                 restaurantPage = restaurantRepository.findAllByOrderByPriceAsc(pageable);
             } else if (order != null && order.equals("priceDesc")) {
@@ -106,9 +109,11 @@ public class RestaurantController {
     
     @GetMapping("/{id}")
     public String show(@PathVariable(name = "id") Integer id, Model model){
+        // コメント: 存在確認が行われていないため、存在しないIDが指定された場合にエラーが発生します
         Restaurant restaurant = restaurantRepository.getReferenceById(id);
         model.addAttribute("restaurant", restaurant);
         
+        // コメント: ReservationInputFormの初期値設定（特に日付や時間など）について考慮すべきです
         ReservationInputForm reservationInputForm = new ReservationInputForm();
         model.addAttribute("reservationInputForm", reservationInputForm);
 

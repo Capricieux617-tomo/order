@@ -85,6 +85,7 @@ public class UserController {
     @PostMapping("/update")
     public Object update(@ModelAttribute @Validated UserEditForm userEditForm, BindingResult bindingResult, RedirectAttributes redirectAttributes, HttpServletRequest httpServletRequest, Model model) throws StripeException {
        
+        // コメント: デバッグ用のSystem.out.printlnは本番環境では適切なロガーに置き換えるべきです
         System.out.println("=== フォーム送信 ===");
         System.out.println("UserEditForm.isPremium: " + userEditForm.getIsPremium());
         System.out.println("UserEditForm.email: " + userEditForm.getEmail());
@@ -103,6 +104,11 @@ public class UserController {
         // ユーザー情報の更新
         User user = userService.getUserById(userEditForm.getId());
         
+        // コメント: ユーザーが見つからない場合の処理が欠けています
+        if (user == null) {
+            // エラーハンドリングが必要
+        }
+        
         System.out.println("=== DBから取得したユーザー情報 ===");
         System.out.println("User.id: " + user.getId());
         System.out.println("User.isPremium: " + user.getIsPremium());
@@ -113,6 +119,7 @@ public class UserController {
             String successUrl = httpServletRequest.getRequestURL().toString().replace("/update", "/premium/success?userId=" + user.getId());
             String cancelUrl = httpServletRequest.getRequestURL().toString().replace("/update", "/premium/cancel");
             
+            // コメント: StripeExceptionのハンドリングが不足しています
             // 明示的にプレミアム会員の価格IDを指定
             String sessionId = stripeService.createCheckoutSession(userEditForm, successUrl, cancelUrl, "premium");
 
@@ -121,7 +128,7 @@ public class UserController {
             return "user/edit"; // 再表示
         }
  
-
+        // コメント: 逆にプレミアム会員から一般会員へのダウングレードの処理が不足しています
         // ユーザー情報を更新
         userService.update(userEditForm);
         redirectAttributes.addFlashAttribute("successMessage", "会員情報を編集しました。");

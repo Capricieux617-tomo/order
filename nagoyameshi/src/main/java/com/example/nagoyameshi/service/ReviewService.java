@@ -22,7 +22,8 @@ public class ReviewService {
 	
 	//登録用
 	@Transactional
-	public void create(Restaurant restaurant, User user,ReviewRegisterForm reviewRegisterForm) {
+	public void create(Restaurant restaurant, User user, ReviewRegisterForm reviewRegisterForm) {
+		// コメント: パラメータのnullチェックを行うべきです
 		Review review = new Review();
 		
 		review.setRestaurant(restaurant);
@@ -31,12 +32,12 @@ public class ReviewService {
 		review.setComment(reviewRegisterForm.getComment());
 		
 		reviewRepository.save(review);
-	
 	}
 		
 	//更新用
 	@Transactional
 	public void update(ReviewEditForm reviewEditForm) {
+		// コメント: getReferenceByIdではなく、findByIdを使用してレビューが存在するか確認すべきです
 		Review review = reviewRepository.getReferenceById(reviewEditForm.getId());
 		
 		review.setScore(reviewEditForm.getScore());
@@ -46,8 +47,9 @@ public class ReviewService {
 	}
 	
 	public boolean reviewJudge(Restaurant restaurant, User user) {
+		// コメント: パラメータのnullチェックを行うべきです
 		Review review = reviewRepository.findByUserAndRestaurant(user, restaurant);
-		return review !=null;
+		return review != null;
 	}
 }
 

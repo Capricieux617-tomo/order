@@ -35,6 +35,7 @@ public class ReservationController {
     private final RestaurantRepository restaurantRepository;
     private final ReservationService reservationService;
 
+    // コメント: コントローラーではリポジトリへの直接アクセスではなく、すべてサービス層経由にすべきです
     public ReservationController(ReservationRepository reservationRepository, RestaurantRepository restaurantRepository, ReservationService reservationService) {
         this.reservationRepository = reservationRepository;
         this.restaurantRepository = restaurantRepository;
@@ -42,11 +43,13 @@ public class ReservationController {
     }
     
     // 予約関連の処理を行う前に、ユーザーが有料会員かどうかを確認する
+    // コメント: このメソッドはUserServiceに移動すべきです。また、@PreAuthorizeアノテーションを使用した認可の方が適切です
     private boolean isPremiumUser(User user) {
         return user != null && user.getIsPremium();
     }
 
     @GetMapping("/reservations")
+    // コメント: 認可チェックはアスペクトやフィルターとして実装し、各メソッドでの重複を避けるべきです
     public String index(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl, @PageableDefault(page = 0, size = 10, sort = "id", direction = Direction.ASC) Pageable pageable, Model model) {
         User user = userDetailsImpl.getUser();
         
@@ -54,6 +57,7 @@ public class ReservationController {
         if (!isPremiumUser(user)) {
             return "redirect:/user/edit";  // 有料会員登録ページにリダイレクト
         }
+        // コメント: 予約の取得はサービス層を介するべきです
         Page<Reservation> reservationPage = reservationRepository.findByUserOrderByCreatedAtDesc(user, pageable);
         model.addAttribute("reservationPage", reservationPage);
         return "reservations/index";
@@ -72,6 +76,8 @@ public class ReservationController {
         if (!isPremiumUser(user)) {
             return "redirect:/user/edit";  // 有料会員登録ページにリダイレクト
         }
+        
+        // コメント: getReferenceByIdではなく、findByIdを使用して存在確認をすべきです
         Restaurant restaurant = restaurantRepository.getReferenceById(id);
         model.addAttribute("restaurant", restaurant);
 
@@ -97,10 +103,12 @@ public class ReservationController {
         if (!isPremiumUser(user)) {
             return "redirect:/user/edit";  // 有料会員登録ページにリダイレクト
         }
+        // コメント: getReferenceByIdではなく、findByIdを使用して存在確認をすべきです
+        // コメント: 予約情報がセッションに存在しない場合、エラーメッセージを表示すべきです
         Restaurant restaurant = restaurantRepository.getReferenceById(id);
         LocalDate orderDate = reservationInputForm.getOrderDate();
         LocalTime orderTime = reservationInputForm.getOrderTime();
-
+        // コメント: orderDateとorderTimeのnullチェックを行い、エラーメッセージを表示すべきです
         ReservationRegisterForm reservationRegisterForm = new ReservationRegisterForm(restaurant.getId(), user.getId(), orderDate.toString(), orderTime.toString(), reservationInputForm.getNumberOfPeople());
 
         model.addAttribute("restaurant", restaurant);  
@@ -133,4 +141,3 @@ public class ReservationController {
     }
     
 }
-	

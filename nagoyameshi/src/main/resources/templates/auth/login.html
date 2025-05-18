@@ -8,6 +8,7 @@
          <title>ログイン</title>       
      </head>
      <body>
+        <!-- インデントがバラバラなので、揃えてください -->
          <div class="nagoyameshi-wrapper">
              <!-- ヘッダー -->
              <div th:replace="~{fragment :: header}"></div>
@@ -20,6 +21,7 @@
                              
                              <div class="row mb-1">  
                              
+<!-- コメント: テスト用アカウント情報を記載したままになっています。セキュリティリスクです -->
                        		 <p class="test-danger">
 								 操作確認用アカウント<br>
 								【メールアドレス】<br>
@@ -48,6 +50,7 @@
                                  </div>
                            </form>
                              
+                        <!-- コメント: 会員登録へのリンクがリンク切れになっています -->
                            <div class="text-center">
                                  <a href="@{/signup}">
                                      会員登録

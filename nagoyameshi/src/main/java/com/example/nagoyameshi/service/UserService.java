@@ -120,7 +120,10 @@ public class UserService {
     // ユーザーを有料会員から無料会員にダウングレードする
     @Transactional
     public void downgradeToFree(User user) {
+        // コメント: Stripeのサブスクリプションをキャンセルする処理が必要です
+        // コメント: user.getStripeSubscriptionId() がnullでないか確認すべきです
         user.setIsPremium(false);
+        // コメント: 他の関連フィールド（stripeSubscriptionIdなど）もクリアすべきです
         userRepository.save(user); // 確実にデータベースに保存される
     }
 }

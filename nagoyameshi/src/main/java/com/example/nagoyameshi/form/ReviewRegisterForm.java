@@ -14,6 +14,7 @@ public class ReviewRegisterForm {
 	private Integer score;
 	
 	@NotBlank(message = "レビューを書き込んでください")
+	// コメント: コメントの長さ制限（例：@Size(max=1000)）を追加すべきです
 	private String comment;
 
 }

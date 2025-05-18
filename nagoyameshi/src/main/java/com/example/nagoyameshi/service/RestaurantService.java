@@ -34,6 +34,7 @@ public class RestaurantService {
 		
 		
 		if (!imageFile.isEmpty()) {
+            // コメント: 画像処理のコードがCategoryServiceと重複しています。共通ユーティリティに抽出すべきです
             String imageName = imageFile.getOriginalFilename(); 
             String hashedImageName = generateNewFileName(imageName);
             Path filePath = Paths.get("src/main/resources/static/storage/" + hashedImageName);
@@ -43,6 +44,7 @@ public class RestaurantService {
 		
 		restaurant.setName(restaurantRegisterForm.getName());
 		// categoryIdをCategoryエンティティに変換
+		// コメント: 例外メッセージをより具体的にし、例外処理を追加すべきです
 		Category category = categoryRepository.findById(restaurantRegisterForm.getCategoryId()).orElseThrow(() -> new IllegalArgumentException("カテゴリが見つかりません"));
 		restaurant.setCategory(category);
 		restaurant.setDescription(restaurantRegisterForm.getDescription());
@@ -90,6 +92,7 @@ public class RestaurantService {
 	
 	 // UUIDを使って生成したファイル名を返す
     public String generateNewFileName(String fileName) {
+        // コメント: fileNameがnullまたは空文字の場合のチェックが必要です
         String[] fileNames = fileName.split("\\.");                
         for (int i = 0; i < fileNames.length - 1; i++) {
             fileNames[i] = UUID.randomUUID().toString();            
@@ -103,7 +106,8 @@ public class RestaurantService {
         try {
             Files.copy(imageFile.getInputStream(), filePath);
         } catch (IOException e) {
+            // コメント: より適切な例外処理が必要です。例外をログに記録し、意味のある例外に変換すべきです
             e.printStackTrace();
         }          
     } 
-}   
+}

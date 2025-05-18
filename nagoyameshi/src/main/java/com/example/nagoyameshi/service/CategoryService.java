@@ -30,6 +30,7 @@ public class CategoryService {
     	MultipartFile imageFile = categoryRegisterForm.getImageFile();
     	
     	if(!imageFile.isEmpty()) {
+    		// コメント: 画像処理のコードが重複しています。ファイル操作用のユーティリティクラスを作成すべきです
     		String imageName = imageFile.getOriginalFilename();
     		String hashedImageName = generateNewFileName(imageName);
     		Path filePath = Paths.get("src/main/resources/static/storage/" + hashedImageName);
@@ -44,6 +45,7 @@ public class CategoryService {
     
     @Transactional
     public void update(CategoryEditForm categoryEditForm) {
+        // コメント: getReferenceByIdではなく、findByIdを使用してカテゴリが存在するか確認すべきです
         Category category = categoryRepository.getReferenceById(categoryEditForm.getId());
         MultipartFile imageFile = categoryEditForm.getImageFile();
         
@@ -57,7 +59,7 @@ public class CategoryService {
         
         category.setName(categoryEditForm.getName());                
        
-                    
+        // コメント: 以前の画像を削除する処理がありません。ディスクスペースの節約のために考慮すべきです        
         categoryRepository.save(category);
     }    
     
@@ -76,6 +78,7 @@ public class CategoryService {
         try {
             Files.copy(imageFile.getInputStream(), filePath);
         } catch (IOException e) {
+            // コメント: 例外処理が不十分です。適切なログ出力と例外処理が必要です
             e.printStackTrace();
         }          
     } 

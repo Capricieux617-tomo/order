@@ -13,6 +13,7 @@ import com.stripe.param.checkout.SessionCreateParams;
 @Service
 public class StripeService {
 
+    // コメント: API鍵などの秘密情報は環境変数かより安全な方法で管理すべきです
     @Value("${stripe.api-key}")
     private String apiKey;
 
@@ -30,6 +31,7 @@ public class StripeService {
 
         String priceId = getPriceIdFromForm(form);
 
+        // コメント: SessionCreateParamsの共通ビルダー処理を抽出できます
         SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
                 .setSuccessUrl(successUrl)
@@ -75,8 +77,10 @@ public class StripeService {
     // Price ID をフォームから取得
     // ============================
     private String getPriceIdFromForm(Object form) {
+        // コメント: instanceof で型チェックしていますが、もっと型安全な設計にできます
         if (form instanceof SignupForm) {
             SignupForm signupForm = (SignupForm) form;
+            // コメント: System.out.println はログフレームワークに置き換えるべきです
             System.out.println("SignupForm isPremium: " + signupForm.getIsPremium());
             return signupForm.getIsPremium() ? premiumPriceId : freePriceId;
 
